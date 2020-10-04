@@ -42,12 +42,11 @@
       }
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.0/moment.min.js"></script>
 </head>
 <body>
 <div id="app" v-cloak>
   <div v-if="meetup">
-    <div class="meetup-cover" :style="{ '--bg-url': `url(${meetup.meetupImg})` }">
+    <div class="meetup-cover" :style="[meetup.meetupImg ? { '--bg-url': `url(${meetup.meetupImg})` } : {}]">
       <h1 v-if="meetup.title" class="meetup-cover__title">
         {{ meetup.title }}
       </h1>

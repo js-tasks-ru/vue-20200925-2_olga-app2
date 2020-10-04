@@ -68,7 +68,7 @@ export const app = new Vue({
           month: 'long',
           day: 'numeric'
         }),
-        dateTime: moment(this.rawMeetup.date).format("YYYY-MM-DD")
+        dateTime: this.formatDate(new Date(this.rawMeetup.date))
       });
     },
   },
@@ -92,5 +92,23 @@ export const app = new Vue({
         titleFromTypes: agendaItemTitles[item.type]
       }));
     },
+    formatDate(date) {
+      let day = date.getDate();
+      if (day < 10) {
+        day = '0' + day;
+      }
+
+      let month = date.getMonth() + 1;
+      if (month < 10) {
+        month = '0' + month;
+      }
+
+      let year = date.getFullYear();
+      if (year < 10) {
+        year = '0' + year;
+      }
+
+      return `${year}-${month}-${day}`;
+    }
   },
 });
