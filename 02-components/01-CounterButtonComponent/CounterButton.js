@@ -1,5 +1,9 @@
 export const CounterButton = {
-  template: `<button type="button" v-on:click="$emit('increment', addCount())">{{ count }}</button>`,
+  template: `
+    <button type="button" v-on:click="addCount">
+      {{ count }}
+    </button>
+  `,
   model: {
     prop: 'count',
     event: 'increment'
@@ -12,7 +16,7 @@ export const CounterButton = {
   },
   methods: {
     addCount() {
-      return this.count + 1;
+      this.$emit('increment', this.count + 1);
     }
   },
 };
