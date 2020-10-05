@@ -7,35 +7,75 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="/assets/styles/index.css">
   <title>Meetup Page Draft</title>
+  <style>
+    [v-cloak] {
+      display: block;
+      padding: 50px 0;
+    }
+
+    [v-cloak]:before {
+      content: '';
+      box-sizing: border-box;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+      margin-left: -20px;
+      border-radius: 50%;
+      border: 3px solid #ccc;
+      border-top-color: #4c6bb6;
+      animation: spinner .6s linear infinite;
+      text-indent: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    [v-cloak] > div {
+      display: none;
+    }
+
+    @keyframes spinner {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 <body>
-<div id="app">
-  <div>
-    <div class="meetup-cover">
-      <h1 class="meetup-cover__title">Название митапа</h1>
+<div id="app" v-cloak>
+  <div v-if="meetup">
+    <div class="meetup-cover" :style="[meetup.meetupImg ? { '--bg-url': `url(${meetup.meetupImg})` } : {}]">
+      <h1 v-if="meetup.title" class="meetup-cover__title">
+        {{ meetup.title }}
+      </h1>
     </div>
 
     <div class="container">
       <div class="meetup">
         <div class="meetup__content">
           <h3>Описание</h3>
-          <p class="meetup-description">Описание митапа</p>
+          <p v-if="meetup.description" class="meetup-description">
+              {{ meetup.description}}
+          </p>
 
           <h3>Программа</h3>
-          <div class="meetup-agenda">
-            <p class="meetup-agenda__empty">Программа пока пуста, но когда-нибудь в ней обязательно что-нибудь появится!</p>
-            <div class="meetup-agenda__item">
+          <div  class="meetup-agenda">
+            <p v-if="!meetup.agendaFull.length" class="meetup-agenda__empty">Программа пока пуста, но когда-нибудь в ней обязательно что-нибудь появится!</p>
+            <div v-for="agendaItem in meetup.agendaFull" class="meetup-agenda__item">
               <div class="meetup-agenda__item-col">
-                <img class="icon" alt="icon" src="/assets/icons/icon-cal-sm.svg" />
+                <img class="icon" :alt="`icon-${agendaItem.icon}`" :src="`/assets/icons/icon-${agendaItem.icon}.svg`" />
               </div>
-              <div class="meetup-agenda__item-col">00:00 - 00:00</div>
+              <div class="meetup-agenda__item-col">{{ `${agendaItem.startsAt} - ${agendaItem.endsAt}` }}</div>
               <div class="meetup-agenda__item-col">
-                <h5 class="meetup-agenda__title">Название доклада</h5>
-                <p><span>Докладчик</span><span class="meetup-agenda__dot"></span><span class="meetup-agenda__lang">RU</span></p>
-                <p>Описание доклада</p>
+                <h5 v-if="agendaItem.titleFromTypes" class="meetup-agenda__title">{{ agendaItem.titleFromTypes }}</h5>
+                <template v-if="agendaItem.type === 'talk'">
+                  <p><span v-if="agendaItem.speaker">{{ agendaItem.speaker }}</span><span class="meetup-agenda__dot"></span><span v-if="agendaItem.language" class="meetup-agenda__lang">{{ agendaItem.language }}</span></p>
+                </template>
+                <p v-if="agendaItem.description">{{ agendaItem.description }}</p>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -43,15 +83,15 @@
           <ul class="info-list">
             <li>
               <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-user.svg" />
-              Организатор
+              {{ meetup.organizer }}
             </li>
             <li>
               <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-map.svg" />
-              Место
+              {{ meetup.place }}
             </li>
             <li>
               <img class="icon info-list__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-              <time datetime="2020-02-31">31 фев. 2020</time>
+              <time :datetime="meetup.dateTime">{{ meetup.dateFormat }}</time>
             </li>
           </ul>
         </div>
@@ -59,7 +99,6 @@
     </div>
   </div>
 </div>
-
 <script type="module" src="script.js"></script>
 </body>
 </html>

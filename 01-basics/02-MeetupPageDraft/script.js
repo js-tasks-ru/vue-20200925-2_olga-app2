@@ -1,5 +1,7 @@
 import Vue from './vue.esm.browser.js';
 
+
+
 /** URL адрес API */
 const API_URL = 'https://course-vue.javascript.ru/api';
 
@@ -46,21 +48,67 @@ const agendaItemIcons = {
 
 export const app = new Vue({
   el: '#app',
-
   data: {
-    //
+    rawMeetup: null,
   },
-
-  mounted() {
-    // Требуется получить данные митапа с API
+  async mounted() {
+    await this.fetchMeetup();
   },
-
   computed: {
-    //
-  },
+    meetup() {
+      if (!this.rawMeetup) {
+        return this.rawMeetup;
+      }
 
+      return Object.assign({}, this.rawMeetup, {
+        meetupImg: this.getMeetupImg(),
+        agendaFull: this.getFullAgenda(),
+        dateFormat: new Date(this.rawMeetup.date).toLocaleString('ru', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        dateTime: this.formatDate(new Date(this.rawMeetup.date))
+      });
+    },
+  },
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
+    async fetchMeetup() {
+      let url = `${API_URL}/meetups/${MEETUP_ID}`;
+
+      await fetch(url)
+      .then(response => response.json())
+      .then((result) => {
+        this.rawMeetup = result;
+      });
+    },
+    getMeetupImg() {
+      return this.rawMeetup ? getMeetupCoverLink(this.rawMeetup) : null;
+    },
+    getFullAgenda() {
+      return this.rawMeetup.agenda.map((item) => ({
+        ...item,
+        icon: agendaItemIcons[item.type],
+        titleFromTypes: agendaItemTitles[item.type]
+      }));
+    },
+    formatDate(date) {
+      let day = date.getDate();
+      if (day < 10) {
+        day = '0' + day;
+      }
+
+      let month = date.getMonth() + 1;
+      if (month < 10) {
+        month = '0' + month;
+      }
+
+      let year = date.getFullYear();
+      if (year < 10) {
+        year = '0' + year;
+      }
+
+      return `${year}-${month}-${day}`;
+    }
   },
 });
