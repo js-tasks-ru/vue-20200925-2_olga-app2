@@ -1,10 +1,18 @@
 export const CounterButton = {
-  // Шаблон потребуется отредактировать
-  template: '<button type="button"></button>',
-
-  // Компонент должен иметь входной параметр
-
-  // Компонент должен иметь модель
-
-  // Шаблон лучше держать максимально простым, а логику выносить в методы
+  template: `<button type="button" v-on:click="$emit('increment', addCount())">{{ count }}</button>`,
+  model: {
+    prop: 'count',
+    event: 'increment'
+  },
+  props: {
+    count: {
+      type: Number,
+      default: 0,
+    }
+  },
+  methods: {
+    addCount() {
+      return this.count + 1;
+    }
+  },
 };
